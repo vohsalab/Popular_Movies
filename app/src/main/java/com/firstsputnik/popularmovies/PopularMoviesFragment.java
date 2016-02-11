@@ -3,14 +3,18 @@ package com.firstsputnik.popularmovies;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -28,9 +32,10 @@ import butterknife.ButterKnife;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class PopularMoviesFragment extends Fragment {
+public class PopularMoviesFragment extends Fragment{
     private static final String TAG = "PopularMoviesFragment";
     private MovieAdapter mMovieAdapter;
+    private String sortOrderSetting;
 
 
 
@@ -45,23 +50,57 @@ public class PopularMoviesFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-         Log.i(TAG, "inside on create");
+        setHasOptionsMenu(true);
+        PreferenceManager.setDefaultValues(getActivity(), R.xml.pref_general, false);
 
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String newSortOrder = sharedPref.getString("pref_sort_order", "most popular");
+        if (!sortOrderSetting.equals(newSortOrder)) {
+            sortOrderSetting = newSortOrder;
+            loadListOfMovies();
+        }
 
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.movies_list_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.movie_list_settings:
+                Intent intent = new Intent(getActivity(), SettingsActivity.class);
+                startActivity(intent);
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.i(TAG, "inside on create view");
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_popular_movies, container, false);
         ButterKnife.bind(this, view);
         mMovieRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
         mMovieRecyclerView.setAdapter(mMovieAdapter);
-        MovieFactory.get().getMoviesForAdapter(this);
+        loadListOfMovies();
         return view;
+    }
+
+    private void loadListOfMovies() {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String sortOrder = sharedPref.getString("pref_sort_order", "most popular");
+        sortOrderSetting = sortOrder;
+        MovieFactory.get().getMoviesForAdapter(this, sortOrder);
     }
 
     public void setupAdapter(List<Movie> movies) {

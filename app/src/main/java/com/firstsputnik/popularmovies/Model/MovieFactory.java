@@ -1,8 +1,7 @@
 package com.firstsputnik.popularmovies.Model;
 
-import android.util.Log;
-
 import com.firstsputnik.popularmovies.API.MovieDBAPIInterface;
+import com.firstsputnik.popularmovies.MovieDetailFragment;
 import com.firstsputnik.popularmovies.PopularMoviesFragment;
 
 import java.io.IOException;
@@ -23,7 +22,7 @@ import retrofit2.Retrofit;
 public class MovieFactory {
     private static MovieFactory sMovieFactory;
     private static final String BASE_URL = "https://api.themoviedb.org";
-    public static final String API_KEY = "f4b3775a3db6e3536aad5eeb3b9915f6";
+    public static final String API_KEY = "";
     private static final String TAG = "Movie Factory";
 
     private List<Movie> mMovies;
@@ -40,9 +39,9 @@ public class MovieFactory {
 
     }
 
-    public void getMoviesForAdapter(final PopularMoviesFragment popularMoviesFragment) {
-        Log.i(TAG, "Inside gmfm");
-        if (mMovies.size() == 0) {
+    public void getMoviesForAdapter(final PopularMoviesFragment popularMoviesFragment, String sortOrder) {
+
+
             OkHttpClient okClient = new OkHttpClient
                     .Builder().addInterceptor(new Interceptor() {
                 @Override
@@ -57,9 +56,15 @@ public class MovieFactory {
                     .client(okClient)
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
-
+            String query = "";
+            if (sortOrder.equals("most popular")) {
+                query="popularity.desc";
+            }
+            else {
+                query = "vote_average.desc";
+            }
             MovieDBAPIInterface service = client.create(MovieDBAPIInterface.class);
-            Call<MovieObject> call = service.getMoviesList("popularity.desc", API_KEY);
+            Call<MovieObject> call = service.getMoviesList(query, API_KEY);
             call.enqueue(new Callback<MovieObject>() {
 
                 @Override
@@ -77,8 +82,6 @@ public class MovieFactory {
 
                 }
             });
-        }
-        else popularMoviesFragment.setupAdapter(mMovies);
     }
 
     public Movie getMovie(int id) {
@@ -92,5 +95,37 @@ public class MovieFactory {
 
     public List<Movie> getMovies() {
         return mMovies;
+    }
+
+    public void getMovieDetails(final MovieDetailFragment fragment, int id) {
+        OkHttpClient okClient = new OkHttpClient
+                .Builder().addInterceptor(new Interceptor() {
+            @Override
+            public Response intercept(Chain chain) throws IOException {
+                Response response = chain.proceed(chain.request());
+                return response;
+            }
+        }).build();
+
+        Retrofit client = new Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .client(okClient)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        MovieDBAPIInterface service = client.create(MovieDBAPIInterface.class);
+        Call<MovieDetail> call = service.getMovieDetails(id, API_KEY);
+        call.enqueue(new Callback<MovieDetail>() {
+            @Override
+            public void onResponse(retrofit2.Response<MovieDetail> response) {
+                MovieDetail movie = response.body();
+                fragment.populateDetails(movie);
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+
+            }
+        });
     }
 }

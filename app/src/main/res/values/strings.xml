@@ -3,4 +3,11 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_settings">Settings</string>
+    <string name="sort_order_setting_title">Sort order</string>
+    <string name="sort_order_dialog_title">Choose movie sort order</string>
+    <string name="sort_order_by_most_popular">By most popular</string>
+    <string name="sort_order_by_highest_rated">By highest-rated</string>
+    <string name="sort_order_by_most_popular_value">most popular</string>
+    <string name="sort_order_by_highest_rated_value">highest rated</string>
 </resources>

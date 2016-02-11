@@ -3,4 +3,78 @@
              android:layout_width="match_parent"
              android:layout_height="match_parent"
              tools:context="com.firstsputnik.popularmovies.MovieDetailFragment">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <TextView
+                android:id="@+id/title_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:text = "Chappie"
+                android:textSize="48sp"
+                android:textColor="@android:color/white"
+                android:background="#009688"
+                android:paddingTop="40dp"
+                android:paddingBottom="32dp"
+                android:paddingLeft="24dp"
+                android:elevation="8dp"/>
+            <ImageView
+                android:id="@+id/image_poster"
+                android:layout_width="150dp"
+                android:layout_height="200dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="24dp"
+                android:layout_below="@id/title_text"
+                android:layout_alignParentLeft="true"
+                android:scaleType="centerCrop"/>
+            <TextView
+                android:id="@+id/movie_release_year"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"
+                android:textSize="30sp"
+                tools:text="2015"
+                android:layout_below="@id/title_text"
+                android:layout_toRightOf="@id/image_poster"/>
+            <TextView
+                android:id="@+id/movie_length"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:textSize="24sp"
+                android:textStyle="italic"
+                tools:text="120min"
+                android:layout_below="@id/movie_release_year"
+                android:layout_toRightOf="@id/image_poster"/>
+            <TextView
+                android:id="@+id/movie_rating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:textSize="16sp"
+                android:textColor="@android:color/black"
+                tools:text="8.1/10"
+                android:layout_below="@id/movie_length"
+                android:layout_toRightOf="@id/image_poster"/>
+            <TextView
+                android:id="@+id/movie_desc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:textSize="16sp"
+                tools:text="In the near future, crime is patrolled by a mechanized police force. When one police droid, Chappie, is stolen and given new programming, he becomes the first robot with the ability to think and feel for himself."
+                android:layout_below="@id/image_poster"
+                />
+        </RelativeLayout>
+
+
+
+    </ScrollView>
 </FrameLayout>

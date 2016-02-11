@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="movie_sort_order_entries">
+        <item>@string/sort_order_by_most_popular</item>
+        <item>@string/sort_order_by_highest_rated</item>
+    </string-array>
+    <string-array name="movie_sort_order_entry_values">
+        <item>@string/sort_order_by_most_popular_value</item>
+        <item>@string/sort_order_by_highest_rated_value</item>
+   </string-array>>
+</resources>
