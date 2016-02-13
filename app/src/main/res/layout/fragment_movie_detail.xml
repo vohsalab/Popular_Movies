@@ -3,9 +3,11 @@
              android:layout_width="match_parent"
              android:layout_height="match_parent"
              tools:context="com.firstsputnik.popularmovies.MovieDetailFragment">
+
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_gravity="center">
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -68,10 +70,54 @@
                 android:layout_marginTop="24dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
+                android:layout_marginBottom="8dp"
                 android:textSize="16sp"
                 tools:text="In the near future, crime is patrolled by a mechanized police force. When one police droid, Chappie, is stolen and given new programming, he becomes the first robot with the ability to think and feel for himself."
                 android:layout_below="@id/image_poster"
                 />
+            <View
+                android:id="@+id/border"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="4dp"
+                android:layout_below="@id/movie_desc"/>
+            <TextView
+                android:id="@+id/trailers"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:textSize="24sp"
+                android:text="Trailers:"
+                android:layout_below="@id/border"
+                />
+            <LinearLayout
+                android:id="@+id/trailers_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/trailers"
+                android:orientation="vertical"/>
+            <TextView
+                android:id="@+id/reviews"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:textSize="24sp"
+                android:text="Reviews:"
+                android:layout_below="@id/trailers_view"/>
+            <LinearLayout
+                android:id="@+id/reviews_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/reviews"
+                android:orientation="vertical"
+                android:divider="?android:dividerHorizontal"
+                android:showDividers="middle"/>
         </RelativeLayout>
 
 

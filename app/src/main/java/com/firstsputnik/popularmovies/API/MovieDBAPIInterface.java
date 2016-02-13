@@ -1,5 +1,7 @@
 package com.firstsputnik.popularmovies.API;
 
+import com.firstsputnik.popularmovies.Model.ListOfMovieTrailers;
+import com.firstsputnik.popularmovies.Model.ListOfReviews;
 import com.firstsputnik.popularmovies.Model.MovieDetail;
 import com.firstsputnik.popularmovies.Model.MovieObject;
 
@@ -18,4 +20,11 @@ public interface MovieDBAPIInterface {
 
     @GET("/3/movie/{id}")
     Call<MovieDetail> getMovieDetails(@Path("id") int id, @Query("api_key") String apiKey);
+
+    @GET("/3/movie/{id}/videos")
+    Call<ListOfMovieTrailers> getTrailersForMovie(@Path("id") int id, @Query("api_key") String apiKey);
+
+    @GET("/3/movie/{id}/reviews")
+    Call<ListOfReviews> getReviewsForMovie(@Path("id") int id, @Query("api_key") String apiKey);
+
 }

@@ -8,11 +8,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.firstsputnik.popularmovies.Model.MovieDetail;
 import com.firstsputnik.popularmovies.Model.MovieFactory;
+import com.firstsputnik.popularmovies.Model.MovieTrailer;
+import com.firstsputnik.popularmovies.Model.Review;
 import com.squareup.picasso.Picasso;
+
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -36,6 +41,10 @@ public class MovieDetailFragment extends Fragment {
     TextView movieRating;
     @Bind(R.id.movie_desc)
     TextView movieDescription;
+    @Bind(R.id.reviews_view)
+    LinearLayout reviewsView;
+    @Bind(R.id.trailers_view)
+    LinearLayout trailersView;
 
     public static MovieDetailFragment newInstance(int movieId) {
         Bundle args = new Bundle();
@@ -57,8 +66,11 @@ public class MovieDetailFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_movie_detail, container, false);
-        MovieFactory.get().getMovieDetails(this, movieId);
         ButterKnife.bind(this, v);
+
+        MovieFactory.get().getMovieDetails(this, movieId);
+        MovieFactory.get().getMovieReviews(this, movieId);
+
         return v;
     }
 
@@ -83,5 +95,23 @@ public class MovieDetailFragment extends Fragment {
             movieReleaseYear.setText(movie.getReleaseDate().substring(0, 4));
         }
         movieDescription.setText(movie.getOverview());
+    }
+
+    public void populateReviews(List<Review> reviews) {
+
+        for (Review review :reviews) {
+            TextView reviewText = new TextView(getActivity());
+            reviewText.setText("\n" + review.getAuthor() + ":\n" + review.getContent() + "\n");
+            reviewsView.addView(reviewText);
+
+
+        }
+
+    }
+
+
+
+    public void populateTrailers(List<MovieTrailer> movieTrailers) {
+
     }
 }
