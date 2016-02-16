@@ -7,15 +7,17 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class ListOfMovieTrailers {
 
     @SerializedName("id")
     @Expose
     private Integer id;
-    @SerializedName("mMovieTrailers")
+    @SerializedName("quicktime")
     @Expose
-    private List<MovieTrailer> mMovieTrailers = new ArrayList<MovieTrailer>();
+    private List<Object> quicktime = new ArrayList<Object>();
+    @SerializedName("youtube")
+    @Expose
+    private List<Trailer> trailers = new ArrayList<Trailer>();
 
     /**
      * 
@@ -38,19 +40,37 @@ public class ListOfMovieTrailers {
     /**
      * 
      * @return
-     *     The mMovieTrailers
+     *     The quicktime
      */
-    public List<MovieTrailer> getMovieTrailers() {
-        return mMovieTrailers;
+    public List<Object> getQuicktime() {
+        return quicktime;
     }
 
     /**
      * 
-     * @param movieTrailers
-     *     The mMovieTrailers
+     * @param quicktime
+     *     The quicktime
      */
-    public void setMovieTrailers(List<MovieTrailer> movieTrailers) {
-        this.mMovieTrailers = movieTrailers;
+    public void setQuicktime(List<Object> quicktime) {
+        this.quicktime = quicktime;
+    }
+
+    /**
+     * 
+     * @return
+     *     The youtube
+     */
+    public List<Trailer> getTrailers() {
+        return trailers;
+    }
+
+    /**
+     * 
+     * @param trailers
+     *     The youtube
+     */
+    public void setTrailers(List<Trailer> trailers) {
+        this.trailers = trailers;
     }
 
 }

@@ -1,9 +1,11 @@
 package com.firstsputnik.popularmovies;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,10 +15,11 @@ import android.widget.TextView;
 
 import com.firstsputnik.popularmovies.Model.MovieDetail;
 import com.firstsputnik.popularmovies.Model.MovieFactory;
-import com.firstsputnik.popularmovies.Model.MovieTrailer;
 import com.firstsputnik.popularmovies.Model.Review;
+import com.firstsputnik.popularmovies.Model.Trailer;
 import com.squareup.picasso.Picasso;
 
+import java.util.HashMap;
 import java.util.List;
 
 import butterknife.Bind;
@@ -28,6 +31,7 @@ public class MovieDetailFragment extends Fragment {
     public static final String ARG_MOVIE_ID = "movie_id";
 
     private int movieId;
+    private HashMap<String, String> listOfTrailers = new HashMap<>();
 
     @Bind(R.id.image_poster)
     ImageView moviePoster;
@@ -70,6 +74,7 @@ public class MovieDetailFragment extends Fragment {
 
         MovieFactory.get().getMovieDetails(this, movieId);
         MovieFactory.get().getMovieReviews(this, movieId);
+        MovieFactory.get().getMovieTrailers(this, movieId);
 
         return v;
     }
@@ -111,7 +116,28 @@ public class MovieDetailFragment extends Fragment {
 
 
 
-    public void populateTrailers(List<MovieTrailer> movieTrailers) {
+    public void populateTrailers(List<Trailer> movieTrailers) {
+        for (Trailer trailer: movieTrailers) {
+            listOfTrailers.put(trailer.getName(), trailer.getSource());
+            TextView trailerName = new TextView(getActivity());
+            trailerName.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+            trailerName.setPadding(0,8,0,8);
+            trailerName.setText(trailer.getName());
+            trailerName.setOnClickListener(new TrailerClickListener());
+            trailersView.addView(trailerName);
+        }
+    }
 
+    private class TrailerClickListener implements View.OnClickListener {
+
+        @Override
+        public void onClick(View v) {
+            TextView tv = (TextView)v;
+            String source = listOfTrailers.get(tv.getText());
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v=" + source)));
+            //Toast.makeText(getActivity(),"http://youtube.com?v=" + source, Toast.LENGTH_SHORT).show();
+        }
     }
 }
+
+

@@ -75,14 +75,7 @@
                 tools:text="In the near future, crime is patrolled by a mechanized police force. When one police droid, Chappie, is stolen and given new programming, he becomes the first robot with the ability to think and feel for himself."
                 android:layout_below="@id/image_poster"
                 />
-            <View
-                android:id="@+id/border"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@android:color/darker_gray"
-                android:layout_marginLeft="4dp"
-                android:layout_marginRight="4dp"
-                android:layout_below="@id/movie_desc"/>
+
             <TextView
                 android:id="@+id/trailers"
                 android:layout_width="match_parent"
@@ -92,14 +85,24 @@
                 android:layout_marginRight="8dp"
                 android:textSize="24sp"
                 android:text="Trailers:"
-                android:layout_below="@id/border"
+                android:layout_below="@id/movie_desc"
                 />
+
             <LinearLayout
                 android:id="@+id/trailers_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/trailers"
-                android:orientation="vertical"/>
+                android:orientation="vertical"
+                android:divider="?android:dividerHorizontal"
+                android:showDividers="middle"/>
+
+            <View
+                android:id="@+id/ReviewBorder"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray"
+                android:layout_below="@id/trailers_view"/>
             <TextView
                 android:id="@+id/reviews"
                 android:layout_width="match_parent"

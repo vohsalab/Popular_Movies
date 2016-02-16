@@ -132,6 +132,7 @@ public class MovieFactory {
             @Override
             public void onResponse(retrofit2.Response<ListOfMovieTrailers> response) {
                 ListOfMovieTrailers movieTrailers = response.body();
+                fragment.populateTrailers(movieTrailers.getTrailers());
             }
 
             @Override
