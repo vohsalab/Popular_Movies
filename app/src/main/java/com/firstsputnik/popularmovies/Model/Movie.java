@@ -56,6 +56,10 @@ public class Movie implements Parcelable {
     @Expose
     private Double voteAverage;
 
+    public Movie() {
+
+    }
+
     /**
      * 
      * @return

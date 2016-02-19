@@ -9,10 +9,12 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.firstsputnik.popularmovies.Model.Movie;
 import com.firstsputnik.popularmovies.Model.MovieDetail;
 import com.firstsputnik.popularmovies.Model.MovieFactory;
 import com.firstsputnik.popularmovies.Model.Review;
@@ -31,6 +33,9 @@ public class MovieDetailFragment extends Fragment {
     public static final String ARG_MOVIE_ID = "movie_id";
 
     private int movieId;
+    private List<Review> mReviews;
+    private List<Trailer> mTrailers;
+    private Movie mMovie;
     private HashMap<String, String> listOfTrailers = new HashMap<>();
 
     @Bind(R.id.image_poster)
@@ -49,6 +54,8 @@ public class MovieDetailFragment extends Fragment {
     LinearLayout reviewsView;
     @Bind(R.id.trailers_view)
     LinearLayout trailersView;
+    @Bind(R.id.button_favorites)
+    Button favoritesButton;
 
     public static MovieDetailFragment newInstance(int movieId) {
         Bundle args = new Bundle();
@@ -73,8 +80,12 @@ public class MovieDetailFragment extends Fragment {
         ButterKnife.bind(this, v);
 
         MovieFactory.get().getMovieDetails(this, movieId);
-        MovieFactory.get().getMovieReviews(this, movieId);
-        MovieFactory.get().getMovieTrailers(this, movieId);
+
+        if (MovieFactory.get().isFavorite(movieId)) {
+            favoritesButton.setText(R.string.favorite_movie);
+        }
+        else favoritesButton.setText(R.string.not_a_favorite_movie);
+        favoritesButton.setOnClickListener(new FavoriteButtonClickListener());
 
         return v;
     }
@@ -103,10 +114,12 @@ public class MovieDetailFragment extends Fragment {
     }
 
     public void populateReviews(List<Review> reviews) {
+        mReviews = reviews;
 
         for (Review review :reviews) {
             TextView reviewText = new TextView(getActivity());
             reviewText.setText("\n" + review.getAuthor() + ":\n" + review.getContent() + "\n");
+            reviewText.setPadding(0,8,0,8);
             reviewsView.addView(reviewText);
 
 
@@ -114,28 +127,54 @@ public class MovieDetailFragment extends Fragment {
 
     }
 
-
-
     public void populateTrailers(List<Trailer> movieTrailers) {
+        mTrailers = movieTrailers;
         for (Trailer trailer: movieTrailers) {
+            LayoutInflater inflater = (LayoutInflater)getActivity().getSystemService
+                    (Context.LAYOUT_INFLATER_SERVICE);
+            final View v = inflater.inflate(R.layout.trailer_details, null);
             listOfTrailers.put(trailer.getName(), trailer.getSource());
-            TextView trailerName = new TextView(getActivity());
+            TextView trailerName = (TextView) v.findViewById(R.id.trailer_name);
             trailerName.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
             trailerName.setPadding(0,8,0,8);
             trailerName.setText(trailer.getName());
-            trailerName.setOnClickListener(new TrailerClickListener());
-            trailersView.addView(trailerName);
+            ImageView iv = (ImageView) v.findViewById(R.id.trailer_thumbnail);
+            Uri uri = Uri.parse("http://img.youtube.com/vi/" + trailer.getSource() + "/default.jpg");
+            if (iv != null) {
+                Picasso.with(getActivity()).load(uri).into(iv);
+            }
+            v.setOnClickListener(new TrailerClickListener());
+            trailersView.addView(v);
         }
     }
+
 
     private class TrailerClickListener implements View.OnClickListener {
 
         @Override
         public void onClick(View v) {
-            TextView tv = (TextView)v;
+            //ImageView iv = (ImageView) v.findViewById(R.id.trailer_thumbnail);
+            TextView tv = (TextView) v.findViewById(R.id.trailer_name);
             String source = listOfTrailers.get(tv.getText());
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v=" + source)));
             //Toast.makeText(getActivity(),"http://youtube.com?v=" + source, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private class FavoriteButtonClickListener implements View.OnClickListener {
+
+        @Override
+        public void onClick(View v) {
+            Button button = (Button) v;
+            if (button.getText().equals(R.string.not_a_favorite_movie)) {
+                MovieFactory.get().AddFavoriteMovie(mMovie, mReviews, mTrailers);
+                button.setText(R.string.favorite_movie);
+            }
+            else {
+                button.setText(R.string.not_a_favorite_movie);
+                MovieFactory.get().RemoveFromFavorites(mMovie.getId());
+
+            }
         }
     }
 }

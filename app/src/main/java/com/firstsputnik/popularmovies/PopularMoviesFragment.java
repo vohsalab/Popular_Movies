@@ -1,6 +1,7 @@
 package com.firstsputnik.popularmovies;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -36,6 +37,11 @@ public class PopularMoviesFragment extends Fragment{
     private static final String TAG = "PopularMoviesFragment";
     private MovieAdapter mMovieAdapter;
     private String sortOrderSetting;
+    private Callbacks mCallbacks;
+
+    public interface Callbacks {
+        void onMovieSelected(Movie movie);
+    }
 
 
 
@@ -45,6 +51,18 @@ public class PopularMoviesFragment extends Fragment{
     public static PopularMoviesFragment newInstance() {
 
         return new PopularMoviesFragment();
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        mCallbacks = (Callbacks) activity;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mCallbacks = null;
     }
 
     @Override
@@ -130,8 +148,7 @@ public class PopularMoviesFragment extends Fragment{
 
         @Override
         public void onClick(View v) {
-            Intent mIntent = MovieDetailActivity.newIntent(getActivity(), mMovie.getId());
-            startActivity(mIntent);
+            mCallbacks.onMovieSelected(mMovie);
 
         }
 

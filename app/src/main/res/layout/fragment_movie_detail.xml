@@ -63,6 +63,17 @@
                 tools:text="8.1/10"
                 android:layout_below="@id/movie_length"
                 android:layout_toRightOf="@id/image_poster"/>
+            <Button
+                android:id="@+id/button_favorites"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/movie_rating"
+                android:layout_toRightOf="@id/image_poster"
+                android:textColor="@android:color/white"
+                android:background="#009688"
+                android:paddingRight="4dp"
+                android:paddingLeft="4dp"
+                tools:text="Add to favorites"/>
             <TextView
                 android:id="@+id/movie_desc"
                 android:layout_width="match_parent"
@@ -119,7 +130,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/reviews"
                 android:orientation="vertical"
-                android:divider="?android:dividerHorizontal"
+                android:divider="?android:attr/dividerHorizontal"
                 android:showDividers="middle"/>
         </RelativeLayout>
 
