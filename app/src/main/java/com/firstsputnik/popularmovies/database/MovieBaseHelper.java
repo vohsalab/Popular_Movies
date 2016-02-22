@@ -20,14 +20,13 @@ public class MovieBaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("create table " + MovieTable.NAME + "(" +
-         "_id integer primary key autoincrement, " +
+         " _id integer primary key autoincrement, " +
         MovieTable.Cols.ID + ", " +
         MovieTable.Cols.DESC + ", " +
+        MovieTable.Cols.TITLE + ", " +
         MovieTable.Cols.RELEASE_DATE + ", " +
         MovieTable.Cols.POSTER_PATH + ", " +
-        MovieTable.Cols.RATING + ", " +
-        MovieTable.Cols.REVIEWS + ", " +
-        MovieTable.Cols.TRAILERS + ")");
+        MovieTable.Cols.RATING +  ")");
     }
 
     @Override

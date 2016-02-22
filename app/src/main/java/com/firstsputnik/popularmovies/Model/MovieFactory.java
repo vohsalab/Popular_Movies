@@ -2,8 +2,10 @@ package com.firstsputnik.popularmovies.Model;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -13,11 +15,8 @@ import com.firstsputnik.popularmovies.PopularMoviesFragment;
 import com.firstsputnik.popularmovies.database.MovieBaseHelper;
 import com.firstsputnik.popularmovies.database.MovieCursorWrapper;
 import com.firstsputnik.popularmovies.database.MovieDbSchema.MovieTable;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,24 +34,24 @@ import retrofit2.Retrofit;
 public class MovieFactory {
     private static MovieFactory sMovieFactory;
     private static final String BASE_URL = "https://api.themoviedb.org";
-    public static final String API_KEY = "f4b3775a3db6e3536aad5eeb3b9915f6";
+    public static final String API_KEY = "";
     private static final String TAG = "Movie Factory";
 
     private List<Movie> mMovies;
     private Context mContext;
     private SQLiteDatabase mDatabase;
-    private List<FavoriteMovie> mFavoriteMovies;
+    private List<Movie> mFavoriteMovies;
 
-    public static MovieFactory get() {
+    public static MovieFactory get(Context context) {
         if (sMovieFactory == null) {
-            sMovieFactory = new MovieFactory();
+            sMovieFactory = new MovieFactory(context);
         }
         return sMovieFactory;
     }
 
-    private MovieFactory() {
+   /* private MovieFactory() {
         mMovies = new ArrayList<>();
-    }
+    }*/
 
     private MovieFactory(Context context) {
         mContext = context.getApplicationContext();
@@ -73,8 +72,8 @@ public class MovieFactory {
         );
         return new MovieCursorWrapper(cursor);
     }
-    private List<FavoriteMovie> getFavoriteMoviesFromDb() {
-        List<FavoriteMovie> favoriteMovies= new ArrayList<>();
+    private List<Movie> getFavoriteMoviesFromDb() {
+        List<Movie> favoriteMovies= new ArrayList<>();
         MovieCursorWrapper cursor = queryMovies(null, null);
         try {
             cursor.moveToFirst();
@@ -88,18 +87,8 @@ public class MovieFactory {
         return favoriteMovies;
     }
 
-    private static <T> String getJsonStringFromListOfObjects(List<T> objectsList) {
-            return new Gson().toJson(objectsList);
 
-    }
-
-    public static <T> List<T> createListOfObjectsFromJsonString(String jsonString) {
-        Type listType = new TypeToken<ArrayList<T>>() {
-        }.getType();
-        return new Gson().fromJson(jsonString, listType);
-    }
-
-    private static ContentValues getContentValues(Movie movie, List<Review> reviews, List<Trailer> trailers) {
+    private static ContentValues getContentValues(Movie movie) {
         ContentValues values = new ContentValues();
         values.put(MovieTable.Cols.ID, movie.getId().toString());
         values.put(MovieTable.Cols.DESC, movie.getOverview());
@@ -107,13 +96,13 @@ public class MovieFactory {
         values.put(MovieTable.Cols.RATING, movie.getVoteAverage());
         values.put(MovieTable.Cols.RELEASE_DATE, movie.getReleaseDate());
         values.put(MovieTable.Cols.TITLE, movie.getTitle());
-        values.put(MovieTable.Cols.REVIEWS, getJsonStringFromListOfObjects(reviews));
-        values.put(MovieTable.Cols.TRAILERS, getJsonStringFromListOfObjects(trailers));
         return values;
     }
     
-    public void AddFavoriteMovie (Movie movie, List<Review> reviews, List<Trailer> trailers) {
-        ContentValues values = getContentValues(movie, reviews, trailers);
+    public void AddFavoriteMovie (int movieId) {
+        Movie fMovie = findMovie(movieId);
+        ContentValues values = getContentValues(fMovie);
+        mFavoriteMovies.add(fMovie);
         mDatabase.insert(MovieTable.NAME, null, values);
     }
     
@@ -124,7 +113,7 @@ public class MovieFactory {
             return;
         }
         Retrofit client = getRetrofitClient();
-            String query = "";
+            String query;
             if (sortOrder.equals("most popular")) {
                 query="popularity.desc";
             }
@@ -153,11 +142,18 @@ public class MovieFactory {
     }
 
     private void getFavoriteMovies(PopularMoviesFragment popularMoviesFragment) {
-        List<Movie> movies = new ArrayList<>();
-        for (FavoriteMovie favoriteMovie: mFavoriteMovies) {
-            movies.add(favoriteMovie.getMovie());
+
+        popularMoviesFragment.setupAdapter(mFavoriteMovies);
+    }
+
+    private Movie findMovie(int id) {
+        for (Movie movie: mMovies) {
+            if (movie.getId() == id) {
+                return movie;
+            }
+
         }
-        popularMoviesFragment.setupAdapter(movies);
+        return null;
     }
 
     @NonNull
@@ -176,19 +172,6 @@ public class MovieFactory {
                 .client(okClient)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-    }
-
-    public Movie getMovie(int id) {
-        for (Movie movie : mMovies) {
-            if (movie.getId().equals(id)) {
-                return movie;
-            }
-        }
-        return null;
-    }
-
-    public List<Movie> getMovies() {
-        return mMovies;
     }
 
     public void getMovieDetails(final MovieDetailFragment fragment, final int id) {
@@ -250,16 +233,32 @@ public class MovieFactory {
     }
 
     public boolean isFavorite(int movieId) {
-        for (FavoriteMovie favoriteMovie: mFavoriteMovies) {
-            if (favoriteMovie.getMovie().getId() == movieId) {
-                return true;
+        if (!mFavoriteMovies.isEmpty()) {
+            for (Movie favoriteMovie : mFavoriteMovies) {
+                if (favoriteMovie.getId() == movieId) {
+                    return true;
+                }
             }
         }
             return false;
     }
 
-    public void RemoveFromFavorites(Integer id) {
-        mDatabase.delete(MovieTable.NAME, MovieTable.Cols.ID + "=" + id, null);
+    public void RemoveFromFavorites(int id) {
+        String whereClause = MovieTable.Cols.ID + " =?" ;
+        mDatabase.delete(MovieTable.NAME, whereClause ,new String[] {String.valueOf(id)});
+        int fmovie;
+        for (Movie favoriteMovie : mFavoriteMovies) {
+            if (favoriteMovie.getId() == id) {
+                fmovie = mFavoriteMovies.indexOf(favoriteMovie);
+                mFavoriteMovies.remove(fmovie);
+                break;
+            }
+        }
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
+        SharedPreferences.Editor editor =  sharedPref.edit();
+        editor.putBoolean("fmovieslistchanged", true);
+        editor.commit();
+
 
     }
 }

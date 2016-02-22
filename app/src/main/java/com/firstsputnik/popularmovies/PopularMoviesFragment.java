@@ -82,6 +82,14 @@ public class PopularMoviesFragment extends Fragment{
             sortOrderSetting = newSortOrder;
             loadListOfMovies();
         }
+        boolean favMoviesListChanged = sharedPref.getBoolean("fmovieslistchanged", false);
+        if (sortOrderSetting.equals(getString(R.string.sort_order_favorite_value)) &&
+                favMoviesListChanged) {
+            loadListOfMovies();
+            SharedPreferences.Editor editor =  sharedPref.edit();
+            editor.putBoolean("fmovieslistchanged", false);
+            editor.commit();
+        }
 
     }
 
@@ -118,7 +126,7 @@ public class PopularMoviesFragment extends Fragment{
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String sortOrder = sharedPref.getString("pref_sort_order", "most popular");
         sortOrderSetting = sortOrder;
-        MovieFactory.get().getMoviesForAdapter(this, sortOrder);
+        MovieFactory.get(getActivity()).getMoviesForAdapter(this, sortOrder);
     }
 
     public void setupAdapter(List<Movie> movies) {

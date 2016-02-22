@@ -14,8 +14,7 @@ public class MovieDbSchema {
             public static final String RELEASE_DATE = "release_date";
             public static final String RATING = "rating";
             public static final String POSTER_PATH = "poster_path";
-            public static final String REVIEWS = "reviews";
-            public static final String TRAILERS = "trailers";
+
         }
     }
 }
